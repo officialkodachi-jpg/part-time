@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Kodachi Partimer</title>
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kodachi">
+<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='30' fill='%232563eb'/%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-size='96' fill='white' font-family='sans-serif'%3E%E2%8F%B0%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -107,7 +113,7 @@ input,select{font-family:var(--sans);font-size:15px}
   <div class="logo">⏰</div>
   <h1>Kodachi Partimer</h1>
   <div class="sub">Masuk untuk lihat jadwal & tugas</div>
-  <div class="field"><label>Nama</label><input id="li-nama" placeholder="Nama kamu / Admin" autocomplete="off"></div>
+  <div class="field"><label>Nama</label><input id="li-nama" placeholder="Nama kamu" autocomplete="off"></div>
   <div class="field"><label>PIN</label><input id="li-pin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>
   <button class="btn" onclick="login()">Masuk</button>
 </div>
@@ -127,7 +133,7 @@ input,select{font-family:var(--sans);font-size:15px}
 
 <script>
 /* ====== KONFIGURASI ====== */
-const API = 'https://script.google.com/macros/s/AKfycbw7-t699rQS9FHdAQQOGvRxkQnL83-VVQWwHBggTWYERXzKN0YVIwCmRHq_PAwI6z-y7A/exec'; // ← ganti dgn URL deploy web app GAS
+const API = 'https://script.google.com/macros/s/AKfycbw7-t699rQS9FHdAQQOGvRxkQnL83-VVQWwHBggTWYERXzKN0YVIwCmRHq_PAwI6z-y7A/exec';
 
 const WARNA = {hijau:['#EAF3DE','#173404'],ungu:['#EEEDFE','#26215C'],pink:['#FBEAF0','#4B1528'],
 kuning:['#FAEEDA','#412402'],biru:['#E6F1FB','#042C53'],merah:['#FCEBEB','#501313'],
@@ -466,6 +472,11 @@ async function vAset(){
 }
 function saveIP(){apiPost({type:'config_set',key:'ip_toko',value:document.getElementById('c-ip').value.trim()}).then(()=>toast('Disimpan'));}
 async function isiIPSekarang(){const ip=await getIP();document.getElementById('c-ip').value=ip;toast('IP: '+ip);}
+
+/* ====== PWA: service worker ====== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
 
 /* ====== AUTO LOGIN ====== */
 (function(){
