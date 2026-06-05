@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Kodachi Partimer</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='30' fill='%232563eb'/%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-size='96' fill='white' font-family='sans-serif'%3E%E2%8F%B0%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--surface:#eceef2;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.16);
+--text:#1a1c22;--muted:#6b7280;--hint:#adb5bd;--accent:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#d97706;
+--mono:'DM Mono',monospace;--sans:'Sora',sans-serif;--r:14px;--r-lg:20px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden}
+button{font-family:var(--sans);cursor:pointer}
+input,select{font-family:var(--sans);font-size:15px}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.hide{display:none!important}
+.mono{font-family:var(--mono)}
+
+/* LOGIN */
+#login{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;max-width:420px;margin:0 auto}
+.logo{width:64px;height:64px;border-radius:18px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;margin-bottom:14px}
+#login h1{font-size:20px;margin:0 0 2px}
+#login .sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.field{width:100%;margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.field input,.field select{width:100%;padding:13px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--card);outline:none}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--border2)}
+.btn.red{background:var(--red)}.btn.redline{background:rgba(220,38,38,.06);color:var(--red);border:1px solid rgba(220,38,38,.4)}
+.btn.greenline{background:rgba(22,163,74,.06);color:var(--green);border:1px solid rgba(22,163,74,.4)}
+
+/* HEADER + NAV */
+.hd{position:sticky;top:0;z-index:20;background:var(--bg);padding:16px 18px 10px;display:flex;align-items:center;gap:10px}
+.hd .av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
+.hd .t1{font-size:16px;font-weight:600;line-height:1.1}
+.hd .t2{font-size:11px;color:var(--muted)}
+.hd .out{margin-left:auto;background:none;border:none;color:var(--muted);font-size:20px}
+.view{flex:1;padding:0 16px 90px;overflow-y:auto}
+.nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-top:1px solid var(--border);display:flex;padding:8px 4px env(safe-area-inset-bottom)}
+.nav button{flex:1;background:none;border:none;color:var(--hint);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;padding:4px 0}
+.nav button.on{color:var(--accent)}
+.nav button svg{width:22px;height:22px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
+.sec{font-size:11px;color:var(--hint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin:6px 2px 8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.stat .l{font-size:11px;color:var(--muted)}.stat .v{font-size:22px;font-weight:600;font-family:var(--mono)}
+.pill{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600}
+.pill.info{background:rgba(37,99,235,.1);color:var(--accent)}
+.pill.warn{background:rgba(217,119,6,.12);color:var(--orange)}
+.pill.ok{background:rgba(22,163,74,.12);color:var(--green)}
+.pill.gray{background:var(--surface);color:var(--muted)}
+
+/* CALENDAR */
+.calhd{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 12px}
+.calhd b{font-size:16px}
+.calhd button{background:none;border:none;font-size:22px;color:var(--accent);padding:4px 10px}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
+.dow span{text-align:center;font-size:10px;color:var(--hint)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day{aspect-ratio:1;border:1px solid var(--border);border-radius:9px;display:flex;flex-direction:column;justify-content:space-between;padding:5px 6px;background:var(--card)}
+.day.mine{box-shadow:0 0 0 2px var(--accent)}
+.day .dn{font-size:11px;color:var(--muted)}
+.day .dots{display:flex;gap:4px;justify-content:center;padding-bottom:2px}
+.dot{width:7px;height:7px;border-radius:50%}
+.dot.isi{background:var(--green)}.dot.kosong{background:var(--red)}
+
+/* DAY SHEET */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:6px 0 24px;max-height:88vh;overflow-y:auto;animation:up .22s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:translateY(0);opacity:1}}
+.grab{width:38px;height:4px;border-radius:3px;background:var(--border2);margin:8px auto 12px}
+.sheet .sh-hd{display:flex;align-items:center;justify-content:space-between;padding:0 18px 12px;border-bottom:1px solid var(--border)}
+.slotbox{padding:15px 18px;border-bottom:1px solid var(--border)}
+.slotbox:last-child{border-bottom:none}
+.slot-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.nm-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);width:100%}
+.nm-chip .ava{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+
+/* TUGAS */
+.task{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.task .ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--card)}
+.task.done .ck{background:var(--green);border-color:var(--green);color:#fff}
+.task.done .tx{text-decoration:line-through;color:var(--hint)}
+.task .tx{font-size:14px;flex:1}
+
+/* MISC */
+.empty{text-align:center;color:var(--hint);font-size:13px;padding:40px 0}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:11px 18px;border-radius:30px;font-size:13px;z-index:99;opacity:0;transition:.25s;max-width:90%;text-align:center}
+#toast.show{opacity:1}
+.spin{width:26px;height:26px;border:3px solid var(--surface);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.list-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:20px;padding:6px 8px 6px 12px;font-size:13px}
+.icobtn{background:none;border:none;font-size:16px;padding:2px 4px}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <div class="logo">⏰</div>
+  <h1>Kodachi Partimer</h1>
+  <div class="sub">Masuk untuk lihat jadwal & tugas</div>
+  <div class="field"><label>Nama</label><input id="li-nama" placeholder="Nama kamu / Admin" autocomplete="off"></div>
+  <div class="field"><label>PIN</label><input id="li-pin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>
+  <button class="btn" onclick="login()">Masuk</button>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app hide" id="app">
+  <div class="hd">
+    <div class="av" id="hd-av">?</div>
+    <div><div class="t1" id="hd-nama">—</div><div class="t2" id="hd-role">—</div></div>
+    <button class="out" onclick="logout()">⎋</button>
+  </div>
+  <div class="view" id="view"></div>
+  <div class="nav" id="nav"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ====== KONFIGURASI ====== */
+const API = 'PASTE_URL_WEB_APP_GAS_DI_SINI'; // ← ganti dgn URL deploy web app GAS
+
+const WARNA = {hijau:['#EAF3DE','#173404'],ungu:['#EEEDFE','#26215C'],pink:['#FBEAF0','#4B1528'],
+kuning:['#FAEEDA','#412402'],biru:['#E6F1FB','#042C53'],merah:['#FCEBEB','#501313'],
+teal:['#E1F5EE','#04342C'],coral:['#FAECE7','#4A1B0C']};
+const DOW=['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+const BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+let USER=null;          // {nama,role,warna}
+let TAB='home';
+let CAL={y:0,m:0};      // bulan yg ditampilkan (m=1..12)
+
+/* ====== API ====== */
+async function apiGet(params){
+  const q=new URLSearchParams(params).toString();
+  const r=await fetch(API+'?'+q);
+  return r.json();
+}
+async function apiPost(obj){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(obj)});
+  return r.json();
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function ava(warna){const w=WARNA[warna]||WARNA.biru;return `background:${w[0]};color:${w[1]}`;}
+function initials(n){return (n||'?').trim().charAt(0).toUpperCase();}
+
+/* ====== LOGIN ====== */
+async function login(){
+  const nama=document.getElementById('li-nama').value.trim();
+  const pin=document.getElementById('li-pin').value.trim();
+  if(!nama||!pin)return toast('Isi nama & PIN');
+  if(API.indexOf('PASTE_URL')===0)return toast('URL GAS belum diisi di kode');
+  const res=await apiPost({type:'login',nama,pin});
+  if(res.status!=='ok')return toast(res.message||'Gagal masuk');
+  USER={nama:res.nama,role:res.role,warna:res.warna||'biru'};
+  localStorage.setItem('kp_user',JSON.stringify(USER));
+  startApp();
+}
+function logout(){localStorage.removeItem('kp_user');location.reload();}
+
+function startApp(){
+  document.getElementById('login').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('hd-av').setAttribute('style',ava(USER.warna));
+  document.getElementById('hd-av').textContent=initials(USER.nama);
+  document.getElementById('hd-nama').textContent=USER.nama;
+  document.getElementById('hd-role').textContent=USER.role==='admin'?'Admin · Toko Kodachi':'Partimer · Toko Kodachi';
+  const now=new Date();CAL={y:now.getFullYear(),m:now.getMonth()+1};
+  buildNav();
+  go(USER.role==='admin'?'ajadwal':'home');
+}
+
+function buildNav(){
+  const I={
+    home:'M3 11l9-8 9 8M5 10v10h14V10',
+    cal:'M3 9h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zM8 2v4M16 2v4',
+    task:'M9 11l3 3 8-8M4 4h11M4 9h6M4 14h6M4 19h9',
+    user:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0',
+    lock:'M6 10V8a6 6 0 1112 0v2M5 10h14v10H5z',
+    plus:'M12 5v14M5 12h14',
+    cog:'M12 9a3 3 0 100 6 3 3 0 000-6zM19 12l1.5 1-1 2-2-.5a6 6 0 01-2 1l-.5 2h-2l-.5-2a6 6 0 01-2-1l-2 .5-1-2 1.5-1V11l-1.5-1 1-2 2 .5a6 6 0 012-1L11 5h2l.5 2a6 6 0 012 1l2-.5 1 2-1.5 1z'
+  };
+  const ic=(d)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  let items;
+  if(USER.role==='admin'){
+    items=[['ajadwal','Jadwal',I.cal],['atugas','Tugas',I.task],['apartimer','Partimer',I.user],['aset','Pengaturan',I.cog]];
+  }else{
+    items=[['home','Home',I.home],['jadwal','Jadwal',I.cal],['tugas','Tugas',I.task],['saya','Saya',I.user]];
+  }
+  document.getElementById('nav').innerHTML=items.map(it=>
+    `<button data-tab="${it[0]}" onclick="go('${it[0]}')">${ic(it[2])}<span>${it[1]}</span></button>`).join('');
+}
+function go(tab){
+  TAB=tab;
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  const v=document.getElementById('view');v.innerHTML='<div class="spin"></div>';
+  ({home:vHome,jadwal:vJadwal,tugas:vTugas,saya:vSaya,
+    ajadwal:vJadwal,atugas:vAdminTugas,apartimer:vAdminPartimer,aset:vAset}[tab])();
+}
+
+/* ====== HOME (absen wifi) ====== */
+async function vHome(){
+  const r=await apiGet({type:'today',nama:USER.nama});
+  const v=document.getElementById('view');
+  let absenCard;
+  if(!r.ada){
+    absenCard=`<div class="card"><div class="sec" style="margin-top:0">Shift hari ini</div>
+      <div class="empty" style="padding:16px 0">Belum ada shift hari ini.<br>Ambil dulu di tab Jadwal.</div></div>`;
+  }else{
+    const berjalan=r.statusShift==='Berjalan';
+    const selesai=String(r.statusShift).indexOf('Selesai')===0;
+    absenCard=`<div class="card">
+      <div class="slot-top"><span class="sec" style="margin:0">Shift hari ini</span>
+        <span class="pill info">${r.slot}</span></div>
+      <div class="mono" style="font-size:20px;font-weight:600">${r.mulai} – ${r.selesai}</div>
+      <div style="text-align:center;margin:16px 0 4px">
+        <div style="font-size:13px;color:var(--muted)">${selesai?'Sudah selesai':berjalan?'Sedang kerja · masuk '+r.masuk:'Belum mulai'}</div>
+      </div>
+      ${selesai?`<div class="pill ok" style="display:block;text-align:center;padding:11px">Shift selesai ✓</div>`
+        :berjalan?`<button class="btn red" onclick="absen('keluar')">Selesai shift</button>
+           <div style="text-align:center;font-size:11px;color:var(--hint);margin-top:8px">Auto-logout otomatis jam ${r.selesai}</div>`
+        :`<button class="btn" onclick="absen('masuk')">Mulai shift (cek wifi)</button>`}
+    </div>`;
+  }
+  const rk=await apiGet({type:'rekap',nama:USER.nama,bulan:ym()});
+  v.innerHTML=absenCard+`<div class="row2">
+    <div class="stat"><div class="l">Jam bulan ini</div><div class="v">${rk.jam||0}<span style="font-size:12px">j</span></div></div>
+    <div class="stat"><div class="l">Tugas selesai</div><div class="v">${rk.tugasDone||0}/${rk.tugasTotal||0}</div></div></div>`;
+}
+async function getIP(){
+  try{const r=await fetch('https://api.ipify.org?format=json');const j=await r.json();return j.ip;}catch(e){return '';}
+}
+async function absen(mode){
+  if(mode==='masuk'){
+    toast('Cek wifi toko…');
+    const ip=await getIP();
+    const res=await apiPost({type:'absen_masuk',nama:USER.nama,ip});
+    if(res.status!=='ok')return toast(res.message||'Gagal');
+    toast('Berhasil masuk '+(res.masuk||''));
+  }else{
+    const res=await apiPost({type:'absen_keluar',nama:USER.nama});
+    if(res.status!=='ok')return toast(res.message||'Gagal');
+    toast('Shift selesai ('+(res.durasi||0)+' menit)');
+  }
+  vHome();
+}
+
+/* ====== JADWAL (kalender bulan → sheet hari) ====== */
+function ym(){return CAL.y+'-'+String(CAL.m).padStart(2,'0');}
+async function vJadwal(){
+  const r=await apiGet({type:'bulan',bulan:ym(),nama:USER.nama});
+  const v=document.getElementById('view');
+  const firstDow=(new Date(CAL.y,CAL.m-1,1).getDay()+6)%7; // Sen=0
+  let cells='';
+  for(let i=0;i<firstDow;i++)cells+='<div></div>';
+  (r.days||[]).forEach(d=>{
+    const mine=d.slots.some(s=>s.milikku);
+    const dots=d.slots.map(s=>`<span class="dot ${s.terisi?'isi':'kosong'}"></span>`).join('');
+    cells+=`<div class="day ${mine?'mine':''}" onclick='openHari(${JSON.stringify(d.tgl)})'>
+      <span class="dn">${d.tanggal}</span><div class="dots">${dots}</div></div>`;
+  });
+  v.innerHTML=`<div class="calhd"><button onclick="navMonth(-1)">‹</button>
+     <b>${BULAN[CAL.m-1]} ${CAL.y}</b><button onclick="navMonth(1)">›</button></div>
+    <div class="dow">${DOW.map(x=>`<span>${x}</span>`).join('')}</div>
+    <div class="grid">${cells}</div>
+    <div style="display:flex;gap:16px;margin-top:14px;font-size:12px;color:var(--muted)">
+      <span><span class="dot isi" style="display:inline-block;margin-right:5px"></span>isi</span>
+      <span><span class="dot kosong" style="display:inline-block;margin-right:5px"></span>kosong</span>
+      ${USER.role==='partimer'?'<span style="margin-left:auto;color:var(--accent)">▢ = shift-mu</span>':''}
+    </div>`;
+}
+function navMonth(d){CAL.m+=d;if(CAL.m<1){CAL.m=12;CAL.y--}if(CAL.m>12){CAL.m=1;CAL.y++}vJadwal();}
+
+async function openHari(tgl){
+  const r=await apiGet({type:'hari',tanggal:tgl,nama:USER.nama});
+  const dt=new Date(tgl); const judul=DOW[(dt.getDay()+6)%7]+', '+dt.getDate()+' '+BULAN[dt.getMonth()];
+  const boxes=(r.slots||[]).map(s=>slotBox(tgl,s)).join('');
+  const ov=document.createElement('div');ov.className='ov';ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML=`<div class="sheet"><div class="grab"></div>
+    <div class="sh-hd"><div><div style="font-size:16px;font-weight:600">${judul}</div></div>
+      <button class="icobtn" style="font-size:22px;color:var(--muted)" onclick="this.closest('.ov').remove()">×</button></div>
+    ${boxes}</div>`;
+  document.body.appendChild(ov);
+}
+function slotBox(tgl,s){
+  const head=`<div class="slot-top"><div><b>${s.slot}</b> <span class="mono" style="font-size:11px;color:var(--hint)">${s.mulai}–${s.selesai}</span></div>
+     <span class="pill ${s.terisi?'ok':'gray'}">${s.terisi?'terisi':'kosong'}</span></div>`;
+  let body='';
+  if(USER.role==='admin'){
+    if(s.terisi){
+      body=`<div class="nm-chip" style="${ava(s.warna)}"><span class="ava" style="background:rgba(0,0,0,.08)">${initials(s.nama)}</span>
+        <b style="flex:1">${s.nama}</b>${s.locked?'🔒':''}</div>
+        <div class="row2" style="margin-top:10px">
+          <button class="btn ghost" onclick="lockShift('${tgl}','${s.slot}',${!s.locked})">${s.locked?'Buka kunci':'Kunci shift'}</button>
+          <button class="btn redline" onclick="adminHapus('${tgl}','${s.slot}')">Hapus</button></div>`;
+    }else body=`<div class="empty" style="padding:10px 0">Belum ada yang ambil</div>`;
+  }else{
+    if(!s.terisi){
+      body=`<button class="btn" onclick="ambil('${tgl}','${s.slot}')">+ Ambil shift ini</button>`;
+    }else if(s.milikku){
+      body=`<div class="nm-chip" style="${ava(s.warna)};margin-bottom:10px"><span class="ava" style="background:rgba(0,0,0,.08)">${initials(s.nama)}</span><b style="flex:1">${s.nama} · kamu</b>${s.locked?'🔒':''}</div>`;
+      body+= s.locked? `<div class="pill gray" style="display:block;text-align:center;padding:11px">Dikunci admin — minta admin buka dulu</div>`
+            : `<button class="btn redline" onclick="batal('${tgl}','${s.slot}')">Batal shift-ku</button>`;
+    }else{
+      body=`<div class="nm-chip" style="${ava(s.warna)}"><span class="ava" style="background:rgba(0,0,0,.08)">${initials(s.nama)}</span>
+        <b style="flex:1">${s.nama}</b><span style="font-size:14px">🔒</span></div>
+        <div style="text-align:center;font-size:12px;color:var(--hint);margin-top:8px">Sudah diambil</div>`;
+    }
+  }
+  return `<div class="slotbox">${head}${body}</div>`;
+}
+async function ambil(tgl,slot){
+  const res=await apiPost({type:'ambil',nama:USER.nama,tanggal:tgl,slot});
+  if(res.status!=='ok')return toast(res.message||'Gagal');
+  toast('Shift diambil → masuk Calendar');closeOv();vJadwal();
+}
+async function batal(tgl,slot){
+  if(!confirm('Batalkan shift '+slot+' tgl '+tgl+'?'))return;
+  const res=await apiPost({type:'batal',nama:USER.nama,tanggal:tgl,slot});
+  if(res.status!=='ok')return toast(res.message||'Gagal');
+  toast('Shift dibatalkan');closeOv();vJadwal();
+}
+async function lockShift(tgl,slot,lock){
+  const res=await apiPost({type:'shift_lock',role:'admin',tanggal:tgl,slot,locked:lock});
+  if(res.status!=='ok')return toast(res.message||'Gagal');
+  toast(lock?'Shift dikunci':'Kunci dibuka');closeOv();vJadwal();
+}
+async function adminHapus(tgl,slot){
+  if(!confirm('Hapus shift ini (sebagai admin)?'))return;
+  const res=await apiPost({type:'batal',role:'admin',nama:USER.nama,tanggal:tgl,slot});
+  if(res.status!=='ok')return toast(res.message||'Gagal');
+  toast('Dihapus');closeOv();vJadwal();
+}
+function closeOv(){const o=document.querySelector('.ov');if(o)o.remove();}
+
+/* ====== TUGAS (partimer) ====== */
+async function vTugas(){
+  const r=await apiGet({type:'tugas',nama:USER.nama});
+  const v=document.getElementById('view');
+  if(!r.list||!r.list.length){v.innerHTML='<div class="empty">Belum ada tugas 🎉</div>';return;}
+  v.innerHTML='<div class="sec" style="margin-top:8px">Tugas kamu</div>'+r.list.map(t=>{
+    const done=t.status==='Selesai';
+    return `<div class="task ${done?'done':''}">
+      <div class="ck" onclick="${done?`undoTugas('${t.id}')`:`doTugas('${t.id}',${t.perluFoto})`}">${done?'✓':''}</div>
+      <div class="tx">${t.tugas}
+        <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill ${t.prioritas==='Wajib'?'warn':'gray'}">${t.prioritas}</span>
+          ${t.perluFoto?'<span class="pill info">butuh foto</span>':''}
+          ${t.tenggat?`<span class="pill gray">${t.tenggat}</span>`:''}
+          ${t.bukti?`<a href="${t.bukti}" target="_blank" class="pill ok">lihat foto</a>`:''}
+        </div></div></div>`;
+  }).join('');
+}
+function doTugas(id,perluFoto){
+  if(perluFoto){
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
+    inp.onchange=()=>{const f=inp.files[0];if(!f)return;const rd=new FileReader();
+      rd.onload=async()=>{const res=await apiPost({type:'tugas_done',id,bukti:rd.result});
+        if(res.status!=='ok')return toast(res.message||'Gagal');toast('Tugas selesai');vTugas();};
+      rd.readAsDataURL(f);};
+    inp.click();
+  }else{ apiPost({type:'tugas_done',id}).then(res=>{if(res.status!=='ok')return toast(res.message||'Gagal');toast('Tugas selesai');vTugas();}); }
+}
+function undoTugas(id){apiPost({type:'tugas_undo',id}).then(()=>vTugas());}
+
+/* ====== SAYA ====== */
+async function vSaya(){
+  const r=await apiGet({type:'rekap',nama:USER.nama,bulan:ym()});
+  const v=document.getElementById('view');
+  v.innerHTML=`<div class="card" style="text-align:center">
+      <div style="font-size:12px;color:var(--muted)">Total jam — ${BULAN[CAL.m-1]} ${CAL.y}</div>
+      <div class="mono" style="font-size:32px;font-weight:600">${r.jam||0}<span style="font-size:14px">j</span> ${r.menitSisa||0}<span style="font-size:14px">m</span></div>
+      <div style="font-size:11px;color:var(--hint)">${r.hadir||0} shift hadir</div></div>
+    <div class="row2">
+      <div class="stat"><div class="l">Shift bulan ini</div><div class="v">${r.shift||0}</div></div>
+      <div class="stat"><div class="l">Tugas</div><div class="v">${r.tugasDone||0}/${r.tugasTotal||0}</div></div></div>
+    <button class="btn ghost" style="margin-top:14px" onclick="logout()">Keluar</button>`;
+}
+
+/* ====== ADMIN: TUGAS ====== */
+async function vAdminTugas(){
+  const [pt,tg]=await Promise.all([apiGet({type:'partimer'}),apiGet({type:'admintugas'})]);
+  const v=document.getElementById('view');
+  const opts=['<option value="Semua">Semua partimer</option>']
+    .concat((pt.list||[]).filter(p=>p.aktif).map(p=>`<option>${p.nama}</option>`)).join('');
+  let list=(tg.list||[]).map(g=>{
+    const who=g.untuk.length>2?g.untuk.length+' orang':g.untuk.join(', ');
+    return `<div class="list-item">
+      <div style="flex:1"><div style="font-weight:500">${g.tugas}</div>
+        <div style="font-size:11px;color:var(--muted)">${who} · ${g.prioritas}${g.tenggat?' · '+g.tenggat:''} · ${g.selesai}/${g.total} selesai</div></div>
+      <button class="icobtn" onclick="delTugas('${g.grupId}')" style="color:var(--red)">🗑</button></div>`;
+  }).join('')||'<div class="empty">Belum ada tugas</div>';
+  v.innerHTML=`<div class="card"><div class="sec" style="margin-top:0">Beri tugas</div>
+      <div class="field"><label>Tugas</label><input id="t-tugas" placeholder="cth: Rapikan rak depan"></div>
+      <div class="field"><label>Untuk</label><select id="t-untuk">${opts}</select></div>
+      <div class="row2"><div class="field"><label>Prioritas</label><select id="t-prio"><option>Penting</option><option>Wajib</option></select></div>
+        <div class="field"><label>Tenggat</label><input id="t-tg" placeholder="cth: hari ini"></div></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:4px 0 12px">
+        <input type="checkbox" id="t-foto" style="width:auto"> Wajib foto bukti</label>
+      <button class="btn" onclick="addTugas()">Kirim tugas</button></div>
+    <div class="sec">Tugas aktif</div>${list}`;
+}
+async function addTugas(){
+  const tugas=document.getElementById('t-tugas').value.trim();
+  if(!tugas)return toast('Isi tugas');
+  const res=await apiPost({type:'tugas_add',tugas,untuk:document.getElementById('t-untuk').value,
+    prioritas:document.getElementById('t-prio').value,tenggat:document.getElementById('t-tg').value,
+    perluFoto:document.getElementById('t-foto').checked});
+  if(res.status!=='ok')return toast(res.message||'Gagal');toast('Tugas dikirim');vAdminTugas();
+}
+function delTugas(g){if(!confirm('Hapus tugas ini?'))return;apiPost({type:'tugas_delete',grupId:g}).then(()=>{toast('Dihapus');vAdminTugas();});}
+
+/* ====== ADMIN: PARTIMER ====== */
+async function vAdminPartimer(){
+  const r=await apiGet({type:'partimer'});
+  const v=document.getElementById('view');
+  const warnaOpt=Object.keys(WARNA).map(w=>`<option value="${w}">${w}</option>`).join('');
+  let list=(r.list||[]).map(p=>`<div class="list-item">
+    <span class="ava" style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;${ava(p.warna)}">${initials(p.nama)}</span>
+    <div style="flex:1"><div style="font-weight:500">${p.nama}</div>
+      <div style="font-size:11px;color:${p.aktif?'var(--green)':'var(--hint)'}">${p.aktif?'aktif':'nonaktif'}</div></div>
+    <button class="icobtn" onclick='editPt(${JSON.stringify(p)})'>✎</button>
+    <button class="icobtn" style="color:var(--red)" onclick="delPt('${p.nama}')">🗑</button></div>`).join('');
+  v.innerHTML=`<div class="card"><div class="sec" style="margin-top:0">Tambah partimer</div>
+      <div class="field"><label>Nama</label><input id="p-nama"></div>
+      <div class="row2"><div class="field"><label>PIN</label><input id="p-pin" inputmode="numeric"></div>
+        <div class="field"><label>Warna</label><select id="p-warna">${warnaOpt}</select></div></div>
+      <button class="btn" onclick="addPt()">Tambah</button></div>
+    <div class="sec">Daftar partimer</div>${list}`;
+}
+async function addPt(){
+  const nama=document.getElementById('p-nama').value.trim();if(!nama)return toast('Isi nama');
+  const res=await apiPost({type:'partimer_add',nama,pin:document.getElementById('p-pin').value,warna:document.getElementById('p-warna').value});
+  if(res.status!=='ok')return toast(res.message||'Gagal');toast('Ditambah');vAdminPartimer();
+}
+function editPt(p){
+  const nama=prompt('Nama:',p.nama);if(nama===null)return;
+  const pin=prompt('PIN baru (kosongkan=tetap):','');
+  const warna=prompt('Warna ('+Object.keys(WARNA).join('/')+'):',p.warna);
+  const aktif=confirm('Aktif? OK=aktif, Cancel=nonaktif');
+  apiPost({type:'partimer_edit',namaLama:p.nama,nama,pin,warna,aktif}).then(res=>{
+    if(res.status!=='ok')return toast(res.message||'Gagal');toast('Disimpan');vAdminPartimer();});
+}
+function delPt(nama){if(!confirm('Hapus '+nama+'?'))return;apiPost({type:'partimer_delete',nama}).then(()=>{toast('Dihapus');vAdminPartimer();});}
+
+/* ====== ADMIN: PENGATURAN ====== */
+async function vAset(){
+  const r=await apiGet({type:'config'});
+  const v=document.getElementById('view');
+  v.innerHTML=`<div class="card"><div class="sec" style="margin-top:0">Wifi toko (untuk absen)</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Isi IP publik wifi toko. Partimer cuma bisa absen kalau IP-nya sama. Boleh beberapa, pisah koma. Kosongkan = absen bebas (tanpa cek).</div>
+    <div class="field"><input id="c-ip" value="${r.ip_toko||''}" placeholder="cth: 114.5.xxx.xxx"></div>
+    <button class="btn" onclick="saveIP()">Simpan</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="isiIPSekarang()">Pakai IP perangkat ini</button></div>
+    <div class="card"><div class="sec" style="margin-top:0">Info</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6">Jadwal & absen tersimpan otomatis ke spreadsheet. Lihat sheet <b>Kalender</b> untuk tampilan grid berwarna, dan <b>Jadwal</b> untuk data mentah.</div></div>`;
+}
+function saveIP(){apiPost({type:'config_set',key:'ip_toko',value:document.getElementById('c-ip').value.trim()}).then(()=>toast('Disimpan'));}
+async function isiIPSekarang(){const ip=await getIP();document.getElementById('c-ip').value=ip;toast('IP: '+ip);}
+
+/* ====== AUTO LOGIN ====== */
+(function(){
+  const saved=localStorage.getItem('kp_user');
+  if(saved){try{USER=JSON.parse(saved);startApp();}catch(e){}}
+})();
+</script>
+</body>
+</html>
